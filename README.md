@@ -5,7 +5,7 @@ application de ménage
 Application web pour générer des fichiers de configuration XMRig optimisés pour le minage de Wownero.
 
 ## 🌐 Accès direct
-**URL live :** https://votre-nom.github.io/wownero1-miner-app
+**URL live :** https://Mchabdrahman.github.io/wownero1-miner-app
 
 ## ⚡ Fonctionnalités
 - ✅ Génération de config XMRig complète
