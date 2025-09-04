@@ -1,110 +1,87 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>🚀 Wownero Miner Generator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🚀 Wownero1 Miner Config</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
-<body class="bg-gray-900 text-white">
+<body style="font-family: Arial, sans-serif; background: #111; color: #eee; text-align: center; padding: 20px;">
+  <h1>⚡ Wownero1 Miner Config Generator</h1>
   <div id="root"></div>
 
   <script>
-    const { useState } = React;
-    const { Download, Settings, Cpu, Zap, Crown, Pickaxe } = lucide;
+    function App() {
+      const [wallet, setWallet] = React.useState("");
+      const [worker, setWorker] = React.useState("worker1");
+      const [config, setConfig] = React.useState("");
 
-    const App = () => {
-      const [wallet, setWallet] = useState("");
-      const [pool, setPool] = useState("pool.wownero.com:3333");
-      const [threads, setThreads] = useState(4);
-      const [rig, setRig] = useState("MyRig");
-      const [generated, setGenerated] = useState(null);
+      function generateConfig() {
+        const cfg = {
+          api: { "id": worker, "worker-id": worker },
+          autosave: true,
+          background: false,
+          randomx: { "1gb-pages": true },
+          pools: [
+            {
+              url: "wownero.herominers.com:10666",
+              user: wallet,
+              pass: worker
+            }
+          ]
+        };
+        setConfig(JSON.stringify(cfg, null, 2));
+      }
 
-      const generate = () => {
-        if (!wallet.startsWith("Wo")) {
-          alert("⚠️ Adresse Wownero invalide (doit commencer par Wo)");
-          return;
-        }
-        const config = { pools: [{ url: pool, user: wallet, pass: rig, algo: "rx/wow" }], cpu: { "rx/wow": Array.from({ length: threads }, (_, i) => i) } };
-        const script = `@echo off
-echo 🚀 WOWNERO MINER STARTING...
-xmrig.exe --config=config_wownero.json
-pause`;
-        setGenerated({ config: JSON.stringify(config, null, 2), script });
-      };
-
-      const dl = (content, name) => {
-        const blob = new Blob([content], { type: "text/plain" });
+      function downloadConfig() {
+        const blob = new Blob([config], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = name;
+        a.href = url;
+        a.download = "config.json";
         a.click();
-      };
+        URL.revokeObjectURL(url);
+      }
 
-      return React.createElement("div", { className: "p-8 max-w-4xl mx-auto space-y-8" }, [
-        React.createElement("h1", { className: "text-4xl font-bold text-center text-yellow-400" }, "👑 Wownero Miner Config Generator"),
-        
-        React.createElement("div", { className: "bg-white/10 p-6 rounded-xl space-y-4" }, [
-          React.createElement("input", {
-            key: "wallet",
-            value: wallet,
-            onChange: e => setWallet(e.target.value),
-            placeholder: "Adresse Wownero (Wo...)",
-            className: "w-full p-3 rounded bg-black/30 border border-gray-600"
-          }),
-          React.createElement("select", {
-            key: "pool",
-            value: pool,
-            onChange: e => setPool(e.target.value),
-            className: "w-full p-3 rounded bg-black/30 border border-gray-600"
-          }, [
-            React.createElement("option", { key: "p1", value: "pool.wownero.com:3333" }, "pool.wownero.com:3333"),
-            React.createElement("option", { key: "p2", value: "wownero.herominers.com:1111" }, "wownero.herominers.com:1111")
-          ]),
-          React.createElement("input", {
-            key: "threads",
-            type: "range",
-            min: "1",
-            max: "8",
-            value: threads,
-            onChange: e => setThreads(parseInt(e.target.value)),
-            className: "w-full"
-          }),
-          React.createElement("input", {
-            key: "rig",
-            value: rig,
-            onChange: e => setRig(e.target.value),
-            placeholder: "Nom du rig",
-            className: "w-full p-3 rounded bg-black/30 border border-gray-600"
-          }),
-          React.createElement("button", {
-            key: "btn",
-            onClick: generate,
-            className: "w-full bg-green-600 hover:bg-green-700 p-3 rounded font-bold"
-          }, "⚡ Générer Config")
-        ]),
-        
-        generated && React.createElement("div", { className: "bg-white/10 p-6 rounded-xl space-y-4" }, [
-          React.createElement("h2", { className: "text-xl font-bold text-green-400" }, "✅ Fichiers générés"),
-          React.createElement("button", {
-            onClick: () => dl(generated.config, "config_wownero.json"),
-            className: "bg-blue-600 p-2 rounded"
-          }, "Télécharger config"),
-          React.createElement("button", {
-            onClick: () => dl(generated.script, "start_wownero.cmd"),
-            className: "bg-purple-600 p-2 rounded ml-2"
-          }, "Télécharger script")
-        ])
-      ]);
-    };
+      return React.createElement("div", null,
+        React.createElement("input", {
+          type: "text",
+          placeholder: "Adresse wallet Wownero",
+          value: wallet,
+          onChange: e => setWallet(e.target.value),
+          style: { padding: "8px", width: "80%", margin: "5px" }
+        }),
+        React.createElement("br"),
+        React.createElement("input", {
+          type: "text",
+          placeholder: "Nom du worker",
+          value: worker,
+          onChange: e => setWorker(e.target.value),
+          style: { padding: "8px", width: "80%", margin: "5px" }
+        }),
+        React.createElement("br"),
+        React.createElement("button", {
+          onClick: generateConfig,
+          style: { padding: "10px 20px", margin: "10px", cursor: "pointer" }
+        }, "⚡ Générer Config"),
+        config &&
+          React.createElement("div", { style: { marginTop: "20px", textAlign: "left" } },
+            React.createElement("h3", null, "Config générée :"),
+            React.createElement("pre", { style: { background: "#222", padding: "10px", borderRadius: "5px" } }, config),
+            React.createElement("button", {
+              onClick: downloadConfig,
+              style: { padding: "10px 20px", marginTop: "10px", cursor: "pointer" }
+            }, "⬇ Télécharger config.json")
+          )
+      );
+    }
 
     const root = ReactDOM.createRoot(document.getElementById("root"));
     root.render(React.createElement(App));
   </script>
 </body>
 </html>
+
 
    
