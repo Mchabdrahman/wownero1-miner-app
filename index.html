@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>🚀 Wownero Miner Generator</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        const { Download, Settings, Cpu, Zap, Crown, Pickaxe } = lucide;
+
+        const WowneroMinerApp = () => {
+          const [walletAddress, setWalletAddress] = useState('');
+          const [poolUrl, setPoolUrl] = useState('pool.wownero.com:3333');
+          const [cpuThreads, setCpuThreads] = useState(4);
+          const [rigName, setRigName] = useState('MyRig');
+          const [generatedFiles, setGeneratedFiles] = useState(null);
+
+          const generateConfig = () => {
+            if (!walletAddress.startsWith('Wo')) {
+              alert('⚠️ Adresse Wownero invalide ! Elle doit commencer par "Wo"');
+              return;
+            }
+
+            const config = {
+              "api": {
+                "id": null,
+                "worker-id": rigName
+              },
+              "http": {
+                "enabled": true,
+                "host": "127.0.0.1",
+                "port": 8080,
+                "access-token": null,
+                "restricted": true
+              },
+              "autosave": true,
+              "background": false,
+              "colors": true,
+              "title": true,
+              "randomx": {
+                "init": -1,
+                "init-avx2": -1,
+                "mode": "auto",
+                "1gb-pages": false,
+                "rdmsr": true,
+                "wrmsr": true,
+                "cache_qos": false,
+                "numa": true,
+                "scratchpad_prefetch_mode": 1
+              },
+              "cpu": {
+                "enabled": true,
+                "huge-pages": true,
+                "huge-pages-jit": false,
+                "hw-aes": null,
+                "priority": null,
+                "memory-pool": false,
+                "yield": true,
+                "max-threads-hint": 100,
+                "asm": true,
+                "argon2-impl": null,
+                "cn/0": false,
+                "cn-lite/0": false,
+                "kawpow": false,
+                "rx": Array.from({length: cpuThreads}, (_, i) => i),
+                "rx/wow": Array.from({length: cpuThreads}, (_, i) => i),
+                "cn-heavy/0": false,
+                "cn-pico": false,
+                "cn-pico/tlo": false,
+                "rx/arq": false,
+                "rx/graft": false,
+                "cn/upx2": false
+              },
+              "opencl": {
+                "enabled": false,
+                "cache": true,
+                "loader": null,
+                "platform": "AMD",
+                "adl": true,
+                "cn/0": false,
+                "cn-lite/0": false,
+                "kawpow": false
+              },
+              "cuda": {
+                "enabled": false,
+                "loader": null,
+                "nvml": true,
+                "cn/0": false,
+                "cn-lite/0": false,
+                "kawpow": false
+              },
+              "pools": [
+                {
+                  "algo": "rx/wow",
+                  "coin": "wownero",
+                  "url": poolUrl,
+                  "user": walletAddress,
+                  "pass": rigName,
+                  "rig-id": null,
+                  "nicehash": false,
+                  "keepalive": false,
+                  "enabled": true,
+                  "tls": false,
+                  "tls-fingerprint": null,
+                  "daemon": false,
+                  "socks5": null,
+                  "self-select": null,
+                  "submit-to-origin": false
+                }
+              ],
+              "print-time": 60,
+              "health-print-time": 60,
+              "dmi": true,
+              "retries": 5,
+              "retry-pause": 5,
+              "syslog": false,
+              "tls": {
+                "enabled": false,
+                "protocols": null,
+                "cert": null,
+                "cert_key": null,
+                "ciphers": null,
+                "ciphersuites": null,
+                "dhparam": null
+              },
+              "user-agent": null,
+              "verbose": 0,
+              "watch": true,
+              "pause-on-battery": false,
+              "pause-on-active": false
+            };
+
+            const startScript = `@echo off
+echo ========================================
+echo 🚀 WOWNERO MINER STARTING...
+echo 👑 Rig: ${rigName}
+echo 💰 Pool: ${poolUrl}
+echo ⚡ Threads: ${cpuThreads}
+echo ========================================
+echo.
+xmrig.exe --config=config_wownero.json
+echo.
+echo ⚠️ Miner stopped. Press any key to restart...
+pause
+goto :start`;
+
+            setGeneratedFiles({
+              config: JSON.stringify(config, null, 2),
+              script: startScript
+            });
+          };
+
+          const downloadFile = (content, filename) => {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+          };
+
+          return React.createElement('div', {
+            className: "min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-green-900 text-white"
+          }, [
+            // Header
+            React.createElement('div', {
+              key: 'header',
+              className: "relative overflow-hidden"
+            }, [
+              React.createElement('div', {
+                key: 'overlay',
+                className: "absolute inset-0 bg-black/20"
+              }),
+              React.createElement('div', {
+                key: 'content',
+                className: "relative container mx-auto px-6 py-12"
+              }, 
+                React.createElement('div', {
+                  className: "text-center"
+                }, [
+                  React.createElement('div', {
+                    key: 'icons',
+                    className: "flex justify-center items-center gap-3 mb-4"
+                  }, [
+                    React.createElement(Crown, { key: 'crown1', className: "h-12 w-12 text-yellow-400 animate-pulse" }),
+                    React.createElement(Pickaxe, { key: 'pickaxe', className: "h-16 w-16 text-orange-400" }),
+                    React.createElement(Crown, { key: 'crown2', className: "h-12 w-12 text-yellow-400 animate-pulse" })
+                  ]),
+                  React.createElement('h1', {
+                    key: 'title',
+                    className: "text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent"
+                  }, "WOWNERO MINER"),
+                  React.createElement('p', {
+                    key: 'subtitle1',
+                    className: "text-xl opacity-90 mb-2"
+                  }, "🚀 Application RÉELLE de minage Wownero"),
+                  React.createElement('p', {
+                    key: 'subtitle2',
+                    className: "text-lg opacity-75"
+                  }, "Vrai Mineur Wownero - Contrôle XMRig Réel")
+                ])
+              )
+            ]),
+            
+            // Main content
+            React.createElement('div', {
+              key: 'main',
+              className: "container mx-auto px-6 py-8"
+            }, [
+              React.createElement('div', {
+                key: 'grid',
+                className: "grid lg:grid-cols-2 gap-8"
+              }, [
+                // Configuration panel
+                React.createElement('div', {
+                  key: 'config',
+                  className: "bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20"
+                }, [
+                  React.createElement('div', {
+                    key: 'config-header',
+                    className: "flex items-center gap-3 mb-6"
+                  }, [
+                    React.createElement(Settings, { key: 'settings-icon', className: "h-6 w-6 text-blue-400" }),
+                    React.createElement('h2', { key: 'config-title', className: "text-2xl font-bold" }, "Configuration")
+                  ]),
+                  
+                  React.createElement('div', {
+                    key: 'form',
+                    className: "space-y-6"
+                  }, [
+                    // Wallet address
+                    React.createElement('div', { key: 'wallet-div' }, [
+                      React.createElement('label', {
+                        key: 'wallet-label',
+                        className: "block text-sm font-medium mb-2"
+                      }, "💰 Adresse Wallet Wownero"),
+                      React.createElement('input', {
+                        key: 'wallet-input',
+                        type: "text",
+                        value: walletAddress,
+                        onChange: (e) => setWalletAddress(e.target.value),
+                        placeholder: "Wo... (votre adresse Wownero)",
+                        className: "w-full px-4 py-3 bg-black/30 border border-white/20 rounded-lg focus:border-blue-400 focus:outline-none text-white placeholder-gray-400"
+                      }),
+                      React.createElement('p', {
+                        key: 'wallet-help',
+                        className: "text-xs text-gray-400 mt-1"
+                      }, "⚠️ Doit commencer par \"Wo\"")
+                    ]),
+                    
+                    // Pool selection
+                    React.createElement('div', { key: 'pool-div' }, [
+                      React.createElement('label', {
+                        key: 'pool-label',
+                        className: "block text-sm font-medium mb-2"
+                      }, "🏊 Pool de minage"),
+                      React.createElement('select', {
+                        key: 'pool-select',
+                        value: poolUrl,
+                        onChange: (e) => setPoolUrl(e.target.value),
+                        className: "w-full px-4 py-3 bg-black/30 border border-white/20 rounded-lg focus:border-blue-400 focus:outline-none text-white"
+                      }, [
+                        React.createElement('option', { key: 'pool1', value: "pool.wownero.com:3333" }, "pool.wownero.com:3333"),
+                        React.createElement('option', { key: 'pool2', value: "wownero.herominers.com:1111" }, "wownero.herominers.com:1111"),
+                        React.createElement('option', { key: 'pool3', value: "wownero-pool.com:4444" }, "wownero-pool.com:4444"),
+                        React.createElement('option', { key: 'pool4', value: "mine.c3pool.com:15555" }, "mine.c3pool.com:15555")
+                      ])
+                    ]),
+                    
+                    // CPU threads
+                    React.createElement('div', { key: 'threads-div' }, [
+                      React.createElement('label', {
+                        key: 'threads-label',
+                        className: "block text-sm font-medium mb-2"
+                      }, [
+                        React.createElement(Cpu, { key: 'cpu-icon', className: "inline h-4 w-4 mr-1" }),
+                        `Threads CPU (${cpuThreads})`
+                      ]),
+                      React.createElement('input', {
+                        key: 'threads-input',
+                        type: "range",
+                        min: "1",
+                        max: "8",
+                        value: cpuThreads,
+                        onChange: (e) => setCpuThreads(parseInt(e.target.value)),
+                        className: "w-full"
+                      }),
+                      React.createElement('div', {
+                        key: 'threads-labels',
+                        className: "flex justify-between text-xs text-gray-400 mt-1"
+                      }, [
+                        React.createElement('span', { key: 'min' }, "1 thread"),
+                        React.createElement('span', { key: 'max' }, "8 threads")
+                      ])
+                    ]),
+                    
+                    // Rig name
+                    React.createElement('div', { key: 'rig-div' }, [
+                      React.createElement('label', {
+                        key: 'rig-label',
+                        className: "block text-sm font-medium mb-2"
+                      }, "🏷️ Nom du Rig"),
+                      React.createElement('input', {
+                        key: 'rig-input',
+                        type: "text",
+                        value: rigName,
+                        onChange: (e) => setRigName(e.target.value),
+                        placeholder: "MyRig",
+                        className: "w-full px-4 py-3 bg-black/30 border border-white/20 rounded-lg focus:border-blue-400 focus:outline-none text-white placeholder-gray-400"
+                      })
+                    ])
+                  ]),
+                  
+                  React.createElement('button', {
+                    key: 'generate-btn',
+                    onClick: generateConfig,
+                    className: "w-full mt-8 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+                  }, [
+                    React.createElement(Zap, { key: 'zap', className: "h-5 w-5" }),
+                    "Générer la Configuration"
+                  ])
+                ]),
+                
+                // Instructions panel
+                React.createElement('div', {
+                  key: 'instructions',
+                  className: "bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20"
+                }, [
+                  React.createElement('h3', {
+                    key: 'instructions-title',
+                    className: "text-2xl font-bold mb-6 flex items-center gap-2"
+                  }, [
+                    React.createElement(Crown, { key: 'crown', className: "h-6 w-6 text-yellow-400" }),
+                    "Instructions"
+                  ]),
+                  
+                  React.createElement('div', {
+                    key: 'instructions-content',
+                    className: "space-y-4 text-sm"
+                  }, [
+                    React.createElement('div', {
+                      key: 'files-info',
+                      className: "bg-green-500/20 border border-green-500/30 rounded-lg p-4"
+                    }, [
+                      React.createElement('h4', {
+                        key: 'files-title',
+                        className: "font-bold text-green-400 mb-2"
+                      }, "✅ Cette app génère de VRAIS fichiers :"),
+                      React.createElement('ul', {
+                        key: 'files-list',
+                        className: "list-disc list-inside space-y-1 text-green-100"
+                      }, [
+                        React.createElement('li', { key: 'config-file' }, [
+                          React.createElement('code', {}, 'config_wownero.json'),
+                          " : Configuration XMRig complète pour Wownero"
+                        ]),
+                        React.createElement('li', { key: 'script-file' }, [
+                          React.createElement('code', {}, 'start_wownero.cmd'),
+                          " : Script batch prêt à lancer"
+                        ]),
+                        React.createElement('li', { key: 'optimized' }, "Optimisé pour votre CPU avec les bons paramètres")
+                      ])
+                    ]),
+                    
+                    React.createElement('div', {
+                      key: 'how-to',
+                      className: "bg-blue-500/20 border border-blue-500/30 rounded-lg p-4"
+                    }, [
+                      React.createElement('h4', {
+                        key: 'how-to-title',
+                        className: "font-bold text-blue-400 mb-2"
+                      }, "🚀 Comment l'utiliser :"),
+                      React.createElement('ol', {
+                        key: 'how-to-list',
+                        className: "list-decimal list-inside space-y-1 text-blue-100"
+                      }, [
+                        React.createElement('li', { key: 'step1' }, [
+                          "Créez un wallet Wownero sur ",
+                          React.createElement('a', {
+                            href: "https://wownero.org",
+                            className: "underline",
+                            target: "_blank",
+                            rel: "noopener noreferrer"
+                          }, "wownero.org")
+                        ]),
+                        React.createElement('li', { key: 'step2' }, "Entrez votre adresse WOW dans l'app (commence par \"Wo\")"),
+                        React.createElement('li', { key: 'step3' }, "Téléchargez les 2 fichiers générés"),
+                        React.createElement('li', { key: 'step4' }, "Copiez-les dans votre dossier XMRig"),
+                        React.createElement('li', { key: 'step5' }, [
+                          "Lancez ",
+                          React.createElement('code', {}, 'start_wownero.cmd'),
+                          " → Minage réel commence !"
+                        ])
+                      ])
+                    ]),
+                    
+                    React.createElement('div', {
+                      key: 'why-wownero',
+                      className: "bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4"
+                    }, [
+                      React.createElement('h4', {
+                        key: 'why-title',
+                        className: "font-bold text-yellow-400 mb-2"
+                      }, "💰 Pourquoi Wownero :"),
+                      React.createElement('ul', {
+                        key: 'why-list',
+                        className: "list-disc list-inside space-y-1 text-yellow-100"
+                      }, [
+                        React.createElement('li', { key: 'hashrate' }, "Même hashrate que Monero (~1200 H/s)"),
+                        React.createElement('li', { key: 'profitable' }, "Parfois plus rentable que XMR"),
+                        React.createElement('li', { key: 'community' }, "Communauté active et fun"),
+                        React.createElement('li', { key: 'payments' }, "Paiements plus fréquents (blocs plus rapides)")
+                      ])
+                    ])
+                  ])
+                ])
+              ]),
+              
+              // Generated files section
+              generatedFiles ? React.createElement('div', {
+                key: 'generated',
+                className: "mt-8 bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20"
+              }, [
+                React.createElement('h3', {
+                  key: 'generated-title',
+                  className: "text-2xl font-bold mb-6 flex items-center gap-2"
+                }, [
+                  React.createElement(Download, { key: 'download-icon', className: "h-6 w-6 text-green-400" }),
+                  "Fichiers Générés"
+                ]),
+                
+                React.createElement('div', {
+                  key: 'files-grid',
+                  className: "grid md:grid-cols-2 gap-6"
+                }, [
+                  React.createElement('div', {
+                    key: 'config-file',
+                    className: "bg-black/30 rounded-lg p-4 border border-white/20"
+                  }, [
+                    React.createElement('div', {
+                      key: 'config-header',
+                      className: "flex items-center justify-between mb-3"
+                    }, [
+                      React.createElement('h4', { key: 'config-name', className: "font-bold" }, "config_wownero.json"),
+                      React.createElement('button', {
+                        key: 'config-download',
+                        onClick: () => downloadFile(generatedFiles.config, 'config_wownero.json'),
+                        className: "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm flex items-center gap-1"
+                      }, [
+                        React.createElement(Download, { key: 'config-dl-icon', className: "h-3 w-3" }),
+                        "Télécharger"
+                      ])
+                    ]),
+                    React.createElement('pre', {
+                      key: 'config-preview',
+                      className: "text-xs text-green-400 overflow-x-auto max-h-32"
+                    }, generatedFiles.config.substring(0, 200) + "...")
+                  ]),
+                  
+                  React.createElement('div', {
+                    key: 'script-file',
+                    className: "bg-black/30 rounded-lg p-4 border border-white/20"
+                  }, [
+                    React.createElement('div', {
+                      key: 'script-header',
+                      className: "flex items-center justify-between mb-3"
+                    }, [
+                      React.createElement('h4', { key: 'script-name', className: "font-bold" }, "start_wownero.cmd"),
+                      React.createElement('button', {
+                        key: 'script-download',
+                        onClick: () => downloadFile(generatedFiles.script, 'start_wownero.cmd'),
+                        className: "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm flex items-center gap-1"
+                      }, [
+                        React.createElement(Download, { key: 'script-dl-icon', className: "h-3 w-3" }),
+                        "Télécharger"
+                      ])
+                    ]),
+                    React.createElement('pre', {
+                      key: 'script-preview',
+                      className: "text-xs text-blue-400 overflow-x-auto"
+                    }, generatedFiles.script)
+                  ])
+                ]),
+                
+                React.createElement('div', {
+                  key: 'success-message',
+                  className: "mt-6 p-4 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg border border-white/20"
+                }, 
+                  React.createElement('p', {
+                    className: "text-center font-bold text-lg"
+                  }, "🎉 Fichiers prêts ! Copiez-les dans votre dossier XMRig et lancez le mining ! 👑")
+                )
+              ]) : null
+            ]),
+            
+            // Footer
+            React.createElement('footer', {
+              key: 'footer',
+              className: "text-center py-8 text-white/60"
+            }, 
+              React.createElement('p', {}, "Made with 💜 for the Wownero community | Such mining, very profit, wow! 🐕")
+            )
+          ]);
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(WowneroMinerApp));
+    </script>
+</body>
+</html>
