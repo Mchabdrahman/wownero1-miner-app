@@ -1,18 +1,21 @@
-
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(React.createElement(WowneroMinerApp));
-    </script>
-</body>
-</html>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Test GitHub Pages</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Test React sur GitHub Pages</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 </head>
 <body>
-  <h1>✅ GitHub Pages fonctionne !</h1>
-  <p>Ceci est une page blanche de test.</p>
+  <div id="root"></div>
+
+  <script>
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement("h1", null, "🚀 React fonctionne sur GitHub Pages !"));
+  </script>
 </body>
 </html>
+
+
+   
