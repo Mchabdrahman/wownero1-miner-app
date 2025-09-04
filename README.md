@@ -20,3 +20,14 @@ Application web pour générer des fichiers de configuration XMRig optimisés po
 - GitHub Pages
 
 Made with 💜 for the Wownero community | Version 1.0
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Test GitHub Pages</title>
+</head>
+<body>
+  <h1>✅ GitHub Pages fonctionne !</h1>
+  <p>Ceci est une page blanche de test.</p>
+</body>
+</html>
